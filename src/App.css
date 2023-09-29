@@ -1,0 +1,9 @@
+.word {
+  display: flex;
+}
+.letter {
+  background: lightblue;
+}
+.blank {
+  background: beige;
+}
