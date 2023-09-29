@@ -1,44 +1,55 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useCallback } from "react";
 import "./App.css";
+
+const attempts = 6;
 
 function App() {
   const [wordle, setWordle] = useState(["s", "t", "u", "n"]);
-  const [wordleAttempt, setWordleAttempt] = useState([]);
-  const [attempts, setAttempts] = useState(6);
+  const [wordleAttempt, setWordleAttempt] = useState({}); //going to be an object of arrays for each attempt
+  const [currentAttempt, setCurrentAttempt] = useState(0); //to keep track of the attempt number
 
-  const latestWordleAttempt = useRef(wordleAttempt);
+  const stateRefs = useRef({ wordleAttempt, currentAttempt }); //required to keep ref to the latest attempt
 
   useEffect(() => {
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
+    window.addEventListener("keydown", handleKeyDown); //adding the window event listener on initial mount
+    const temp = {};
+    for (let i = 0; i < attempts; ++i) temp[i] = [];
+    setWordleAttempt(temp); //creating empty wordleAttempt object {1: [], 2: []...}
+    return () => window.removeEventListener("keydown", handleKeyDown); //removing the window event listener on unmount
   }, []);
 
   const handleKeyDown = (e) => {
+    const { wordleAttempt, currentAttempt } = stateRefs.current; //getting current attempt
     if (
-      /^[a-z]$/.test(e.key) &&
-      latestWordleAttempt.current.length < wordle.length
+      /^[a-z]$/.test(e.key) && //checking if key is a-z
+      wordleAttempt.length < wordle.length //checking if we got the word length
     )
-      setWordleAttempt((prev) => [...prev, e.key]);
+      setWordleAttempt((prev) => ({
+        ...prev,
+        [currentAttempt]: [...wordleAttempt, e.key],
+      }));
   };
 
   useEffect(() => {
-    // Update the ref whenever wordleAttempt changes
-    latestWordleAttempt.current = wordleAttempt;
-  }, [wordleAttempt]);
+    // Update the state refs whenever wordleAttempt or currentAttempt changes
+    stateRefs.current.wordleAttempt = wordleAttempt[currentAttempt];
+    stateRefs.current.currentAttempt = currentAttempt;
+  }, [wordleAttempt, currentAttempt]);
 
-  const checkAttempt = () => console.log("TRY NEXT ATTEMPT");
+  const checkAttempt = () => {
+    setCurrentAttempt(currentAttempt + 1);
+  };
 
   return (
     <div className="word-container">
       {[...Array(attempts)].map((attempt, index) => (
         <div className="word" key={`Attempt - ${index}`}>
           {wordle.map((letter, i) => (
-            <div
-              key={`Letter - ${i}`}
-              // className={wordleAttempt[i] ? "letter" : "blank"}
-            >
-              {wordleAttempt[i] ? (
-                <div className="letter">{wordleAttempt[i].toUpperCase()}</div>
+            <div key={`Letter - ${i}`} className="letter-container">
+              {wordleAttempt[index] && wordleAttempt[index][i] ? (
+                <div className="letter">
+                  {wordleAttempt[index][i].toUpperCase()}
+                </div>
               ) : (
                 <div className="blank">&nbsp;</div>
               )}
