@@ -5,12 +5,19 @@
 
 .letter-container {
   border: 1px solid black;
-  padding: 5px;
   width: 20px;
 }
 .letter {
-  background: lightblue;
+  text-align: center;
 }
 .blank {
-  background: beige;
+}
+.correct {
+  background: green;
+}
+.incorrect {
+  background: red;
+}
+.exists {
+  background: yellow;
 }
