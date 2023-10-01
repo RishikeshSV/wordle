@@ -1,16 +1,18 @@
 import React, { useState, useRef, useEffect } from "react";
+import axios from "axios";
 import "./App.css";
 
-const attempts = 6;
-const wordle = ["s", "t", "u", "n"];
+const attempts = 5;
 
 function App() {
+  const [wordle, setWordle] = useState([]);
   const [wordleAttempt, setWordleAttempt] = useState({}); //going to be an object of arrays for each attempt
   const [currentAttempt, setCurrentAttempt] = useState(0); //to keep track of the attempt number
 
-  const stateRefs = useRef({ wordleAttempt, currentAttempt }); //required to keep ref to the latest attempt
+  const stateRefs = useRef({ wordle, wordleAttempt, currentAttempt }); //required to keep ref to the latest attempt
 
   useEffect(() => {
+    fetchWordle();
     window.addEventListener("keydown", handleKeyDown); //adding the window event listener on initial mount
     const temp = {};
     for (let i = 0; i < attempts; ++i) temp[i] = { word: [], style: [] };
@@ -18,15 +20,24 @@ function App() {
     return () => window.removeEventListener("keydown", handleKeyDown); //removing the window event listener on unmount
   }, []);
 
+  const fetchWordle = async () => {
+    const { data } = await axios.get(
+      "https://random-word-api.herokuapp.com/word"
+    );
+    console.log(data);
+    setWordle(data[0].split(""));
+  };
+
   useEffect(() => {
     // Update the state refs whenever wordleAttempt or currentAttempt changes
+    stateRefs.current.wordle = wordle;
     stateRefs.current.wordleAttempt = wordleAttempt[currentAttempt];
     stateRefs.current.currentAttempt = currentAttempt;
-  }, [wordleAttempt, currentAttempt]);
+  }, [wordle, wordleAttempt, currentAttempt]);
 
   const handleKeyDown = (e) => {
     //eventListener creates a closure and will be registered with initial state values and won't use the updated values. So we require refs to use the updated values
-    const { wordleAttempt, currentAttempt } = stateRefs.current; //getting current attempt
+    const { wordle, wordleAttempt, currentAttempt } = stateRefs.current; //getting current attempt
     if (
       /^[a-z]$/.test(e.key) && //checking if key is a-z
       wordleAttempt.word.length < wordle.length //checking if we got the word length
@@ -43,40 +54,60 @@ function App() {
       }));
     else if (e.key === "Enter" && wordleAttempt.word.length === wordle.length)
       //if key is enter and reached word length go to next attempt
-      checkAttempt(currentAttempt, wordleAttempt);
+      checkAttempt(currentAttempt, wordleAttempt, wordle);
   };
 
-  const checkAttempt = (attempt = currentAttempt, word = wordleAttempt) => {
+  const checkAttempt = (
+    attempt = currentAttempt,
+    word = wordleAttempt,
+    wordle = wordle
+  ) => {
     word.word.map((letter, i) => {
-      if (letter === wordle[i]) word.style.push("correct");
-      else if (wordle.includes(letter)) word.style.push("exists");
-      else word.style.push("incorrect");
+      if (letter === wordle[i])
+        word.style.push("correct"); //correct guess at correct position
+      else if (wordle.includes(letter)) {
+        const letterCountInWord = word.word
+          .slice(0, i + 1)
+          .filter((l) => l === letter).length;
+        const letterCountInWordle = wordle
+          .slice(0, i + 1)
+          .filter((l) => l === letter).length;
+        if (letterCountInWord <= letterCountInWordle)
+          word.style.push("exists"); //correct guess at wrong position
+        else word.style.push("incorrect"); //incorrect guess
+      } else {
+        word.style.push("incorrect"); //incorrect guess
+      }
     });
     setCurrentAttempt(attempt + 1);
   };
 
   return (
-    <div className="word-container">
-      {[...Array(attempts)].map((attempt, index) => (
-        <div className="word" key={`Attempt - ${index}`}>
-          {wordle.map((letter, i) => (
-            <div key={`Letter - ${i}`} className="letter-container">
-              {wordleAttempt[index] && wordleAttempt[index].word[i] ? (
-                <div className={"letter " + wordleAttempt[index].style[i]}>
+    <React.Fragment>
+      <div className="title">WORDLE</div>
+      <div className="word-container">
+        {[...Array(attempts)].map((attempt, index) => (
+          <div className="word" key={`Attempt - ${index}`}>
+            {wordle.map((letter, i) =>
+              wordleAttempt[index] && wordleAttempt[index].word[i] ? (
+                <div
+                  key={`Letter - ${i}`}
+                  className={
+                    "letter-container " + wordleAttempt[index].style[i]
+                  }
+                >
                   {wordleAttempt[index].word[i].toUpperCase()}
                 </div>
               ) : (
-                <div className="blank">&nbsp;</div>
-              )}
-            </div>
-          ))}
-        </div>
-      ))}
-      {/* <button className="submit" onClick={() => checkAttempt()}>
-        SUBMIT
-      </button>
-      <button className="delete">DELETE</button> */}
-    </div>
+                <div key={`Letter - ${i}`} className="letter-container">
+                  &nbsp;
+                </div>
+              )
+            )}
+          </div>
+        ))}
+      </div>
+    </React.Fragment>
   );
 }
 
