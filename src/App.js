@@ -125,12 +125,7 @@ function App() {
       ) : null}
     </React.Fragment>
   ) : (
-    <div class="wrap">
-      <div class="loading">
-        <div class="bounceball"></div>
-        <div class="loader-text">LOADING</div>
-      </div>
-    </div>
+    <div style={{ color: "white" }}>...</div>
   );
 }
 
