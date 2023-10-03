@@ -9,6 +9,8 @@ function App() {
   const [wordleAttempt, setWordleAttempt] = useState({}); //going to be an object of arrays for each attempt
   const [currentAttempt, setCurrentAttempt] = useState(0); //to keep track of the attempt number
 
+  const [gameOver, setGameOver] = useState(false);
+
   const stateRefs = useRef({ wordle, wordleAttempt, currentAttempt }); //required to keep ref to the latest attempt
 
   useEffect(() => {
@@ -22,7 +24,7 @@ function App() {
 
   const fetchWordle = async () => {
     const { data } = await axios.get(
-      "https://random-word-api.herokuapp.com/word"
+      "https://random-word-api.herokuapp.com/word?length=5"
     );
     console.log(data);
     setWordle(data[0].split(""));
@@ -62,16 +64,13 @@ function App() {
     word = wordleAttempt,
     wordle = wordle
   ) => {
+    setCurrentAttempt(attempt + 1);
     word.word.map((letter, i) => {
       if (letter === wordle[i])
         word.style.push("correct"); //correct guess at correct position
       else if (wordle.includes(letter)) {
-        const letterCountInWord = word.word
-          .slice(0, i + 1)
-          .filter((l) => l === letter).length;
-        const letterCountInWordle = wordle
-          .slice(0, i + 1)
-          .filter((l) => l === letter).length;
+        const letterCountInWord = word.word.filter((l) => l === letter).length;
+        const letterCountInWordle = wordle.filter((l) => l === letter).length;
         if (letterCountInWord <= letterCountInWordle)
           word.style.push("exists"); //correct guess at wrong position
         else word.style.push("incorrect"); //incorrect guess
@@ -79,13 +78,25 @@ function App() {
         word.style.push("incorrect"); //incorrect guess
       }
     });
-    setCurrentAttempt(attempt + 1);
+    if (
+      attempt + 1 >= attempts ||
+      word.style.filter((a) => a === "correct").length === wordle.length
+    ) {
+      setGameOver(true);
+      window.removeEventListener("keydown", handleKeyDown);
+      return;
+    }
   };
 
-  return (
+  return wordle.length ? (
     <React.Fragment>
-      <div className="title">WORDLE</div>
-      <div className="word-container">
+      <div className="title" style={{ opacity: gameOver ? "0.5" : "1" }}>
+        WORDLE
+      </div>
+      <div
+        className="word-container"
+        style={{ opacity: gameOver ? "0.5" : "1" }}
+      >
         {[...Array(attempts)].map((attempt, index) => (
           <div className="word" key={`Attempt - ${index}`}>
             {wordle.map((letter, i) =>
@@ -107,7 +118,19 @@ function App() {
           </div>
         ))}
       </div>
+      {gameOver ? (
+        <div className="reset-game" onClick={() => window.location.reload()}>
+          PLAY NEW GAME
+        </div>
+      ) : null}
     </React.Fragment>
+  ) : (
+    <div class="wrap">
+      <div class="loading">
+        <div class="bounceball"></div>
+        <div class="loader-text">LOADING</div>
+      </div>
+    </div>
   );
 }
 
