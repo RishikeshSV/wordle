@@ -27,7 +27,7 @@ function App() {
 
   const fetchWordle = async () => {
     const { data } = await axios.get(
-      "https://random-word-api.herokuapp.com/word?length=5"
+      "https://random-word-api.herokuapp.com/word"
     );
     console.log(data);
     setWordle(data[0].split(""));
