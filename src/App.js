@@ -65,7 +65,7 @@ function App() {
         [currentAttempt]: { style: [], word: wordleAttempt.word.slice(0, -1) },
       }));
     else if (
-      (inputLetter === "Enter" || inputLetter === "{enter}") &&
+      (inputLetter === "Enter" || inputLetter === "enter") &&
       wordleAttempt.word.length === wordle.length
     )
       //if key is enter and reached word length go to next attempt

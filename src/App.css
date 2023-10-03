@@ -53,3 +53,23 @@
   background: white;
   color: black;
 }
+
+.hg-theme-default {
+  font-family: "Pixelify Sans", cursive !important;
+  background-color: black !important;
+}
+.hg-theme-default .hg-button {
+  background: #a0bbf5 !important;
+  border-radius: 5px !important;
+  display: block !important;
+  padding: 5px !important;
+  text-align: center !important;
+  height: 30px !important;
+  flex-grow: 0 !important;
+}
+.hg-theme-default .hg-button.hg-standardBtn {
+  width: 58px !important;
+}
+.hg-theme-default .hg-row {
+  justify-content: center;
+}
