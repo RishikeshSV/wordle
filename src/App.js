@@ -1,6 +1,9 @@
 import React, { useState, useRef, useEffect } from "react";
-import axios from "axios";
 import "./App.css";
+
+import axios from "axios";
+
+import KeyboardMobile from "./KeyboardMobile";
 
 const attempts = 5;
 
@@ -40,21 +43,31 @@ function App() {
   const handleKeyDown = (e) => {
     //eventListener creates a closure and will be registered with initial state values and won't use the updated values. So we require refs to use the updated values
     const { wordle, wordleAttempt, currentAttempt } = stateRefs.current; //getting current attempt
+    const inputLetter = e.key || e;
     if (
-      /^[a-z]$/.test(e.key) && //checking if key is a-z
+      /^[a-z]$/.test(inputLetter) && //checking if key is a-z
       wordleAttempt.word.length < wordle.length //checking if we got the word length
     )
       setWordleAttempt((prev) => ({
         ...prev,
-        [currentAttempt]: { style: [], word: [...wordleAttempt.word, e.key] },
+        [currentAttempt]: {
+          style: [],
+          word: [...wordleAttempt.word, inputLetter],
+        },
       }));
-    else if (e.key === "Backspace" && wordleAttempt.word.length >= 1)
+    else if (
+      (inputLetter === "Backspace" || inputLetter === "{bksp}") &&
+      wordleAttempt.word.length >= 1
+    )
       //if key is backspace and word length is not 0
       setWordleAttempt((prev) => ({
         ...prev,
         [currentAttempt]: { style: [], word: wordleAttempt.word.slice(0, -1) },
       }));
-    else if (e.key === "Enter" && wordleAttempt.word.length === wordle.length)
+    else if (
+      (inputLetter === "Enter" || inputLetter === "{enter}") &&
+      wordleAttempt.word.length === wordle.length
+    )
       //if key is enter and reached word length go to next attempt
       checkAttempt(currentAttempt, wordleAttempt, wordle);
   };
@@ -118,6 +131,7 @@ function App() {
           </div>
         ))}
       </div>
+      <KeyboardMobile handleKeyDown={handleKeyDown} />
       {gameOver ? (
         <div className="reset-game" onClick={() => window.location.reload()}>
           PLAY NEW GAME
