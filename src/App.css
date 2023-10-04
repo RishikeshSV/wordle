@@ -72,10 +72,23 @@
   text-align: center !important;
   height: 30px !important;
   flex-grow: 0 !important;
+  border-bottom: none !important;
 }
 .hg-theme-default .hg-button.hg-standardBtn {
   width: 58px !important;
 }
 .hg-theme-default .hg-row {
   justify-content: center;
+}
+.hg-theme-default .hg-correct {
+  background: #1f42cb !important;
+  border: 2px solid #1f42cb;
+}
+.hg-theme-default .hg-incorrect {
+  background: #474040 !important;
+  border: 2px solid #474040;
+}
+.hg-theme-default .hg-exists {
+  background: #95931c !important;
+  border: 2px solid #95931c;
 }

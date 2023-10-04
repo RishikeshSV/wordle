@@ -34,6 +34,7 @@ function App() {
     );
     console.log(data[0]);
     setWordle(data[0].split(""));
+    // setWordle("isatine".split(""));
   };
 
   useEffect(() => {
@@ -134,7 +135,10 @@ function App() {
           </div>
         ))}
       </div>
-      <KeyboardMobile handleKeyDown={handleKeyDown} />
+      <KeyboardMobile
+        handleKeyDown={handleKeyDown}
+        keyColors={wordleAttempt[currentAttempt - 1]}
+      />
       {gameOver ? (
         <div className="new-game-container">
           <div>The word was: </div>
