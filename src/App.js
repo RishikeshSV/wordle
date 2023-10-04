@@ -26,10 +26,13 @@ function App() {
   }, []);
 
   const fetchWordle = async () => {
+    const max = 7;
+    const min = 1;
+    const wordLength = Math.floor(Math.random() * (max - min + 1)) + min;
     const { data } = await axios.get(
-      "https://random-word-api.herokuapp.com/word"
+      `https://random-word-api.herokuapp.com/word?length=${wordLength}`
     );
-    console.log(data);
+    console.log(data[0]);
     setWordle(data[0].split(""));
   };
 
