@@ -29,11 +29,14 @@ function App() {
     const max = 7;
     const min = 1;
     const wordLength = Math.floor(Math.random() * (max - min + 1)) + min;
-    const { data } = await axios.get(
-      `https://random-word-api.herokuapp.com/word?length=${wordLength}`
-    );
-    console.log(data[0]);
-    setWordle(data[0].split(""));
+    await axios
+      .get(`https://random-word-api.herokuapp.com/word?length=${wordLength}`)
+      .then((a) => {
+        console.log(a.data);
+        a.data.length
+          ? setWordle(a.data[0].split(""))
+          : setWordle(["e", "r", "r", "o", "r"]);
+      });
     // setWordle("isatine".split(""));
   };
 
