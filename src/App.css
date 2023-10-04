@@ -38,20 +38,25 @@
   background: #95931c;
   border: 2px solid #95931c;
 }
-.reset-game {
+.new-game-container {
+  font-size: 25px;
+  position: absolute;
+  font-family: "Pixelify Sans", cursive;
+  text-align: center;
   color: white;
+}
+.reset-game {
+  color: #6a7dc8;
   cursor: pointer;
   padding: 25px;
   border-radius: 40px;
-  font-size: 20px;
-  position: absolute;
   background: black;
-  font-family: "Pixelify Sans", cursive;
   transition: all 0.8s;
+  letter-spacing: 2px;
 }
 
 .reset-game:hover {
-  background: white;
+  background: #6a7dc8;
   color: black;
 }
 

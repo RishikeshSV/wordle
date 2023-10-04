@@ -106,12 +106,12 @@ function App() {
 
   return wordle.length ? (
     <React.Fragment>
-      <div className="title" style={{ opacity: gameOver ? "0.5" : "1" }}>
+      <div className="title" style={{ opacity: gameOver ? "0.2" : "1" }}>
         WORDLE
       </div>
       <div
         className="word-container"
-        style={{ opacity: gameOver ? "0.5" : "1" }}
+        style={{ opacity: gameOver ? "0.2" : "1" }}
       >
         {[...Array(attempts)].map((attempt, index) => (
           <div className="word" key={`Attempt - ${index}`}>
@@ -136,8 +136,14 @@ function App() {
       </div>
       <KeyboardMobile handleKeyDown={handleKeyDown} />
       {gameOver ? (
-        <div className="reset-game" onClick={() => window.location.reload()}>
-          PLAY NEW GAME
+        <div className="new-game-container">
+          <div>The word was: </div>
+          <div style={{ fontSize: "90px" }}>
+            {wordle.join("").toUpperCase()}
+          </div>
+          <div className="reset-game" onClick={() => window.location.reload()}>
+            PLAY NEW GAME
+          </div>
         </div>
       ) : null}
     </React.Fragment>
